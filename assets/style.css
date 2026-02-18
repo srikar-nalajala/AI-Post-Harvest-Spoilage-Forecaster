@@ -1,0 +1,84 @@
+/* Main App Background */
+.stApp {
+    background-color: #1E1E1E;
+    color: #FFFFFF;
+}
+
+/* Hide Streamlit Header/Footer for App-like feel */
+header[data-testid="stHeader"] {
+    display: none;
+}
+footer {
+    display: none;
+}
+
+/* Card Styling */
+div[data-testid="stContainer"] {
+    background-color: #2D2D2D;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border: 1px solid #3E3E3E;
+}
+
+/* Headings */
+h1, h2, h3 {
+    color: #4CAF50 !important;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Button Styling - Full width for easy tapping */
+.stButton > button {
+    width: 100%;
+    border-radius: 8px;
+    height: 3em;
+    font-weight: bold;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+}
+.stButton > button:hover {
+    background-color: #45a049;
+}
+
+/* File Uploader - styled as a drop zone */
+div[data-testid="stFileUploader"] {
+    border: 2px dashed #4CAF50;
+    border-radius: 10px;
+    background-color: #252525;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Tab Styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+    background-color: #1E1E1E;
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 50px;
+    white-space: pre-wrap;
+    background-color: #2D2D2D;
+    border-radius: 8px;
+    gap: 1px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #AAAAAA;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: #4CAF50 !important;
+    color: white !important;
+}
+
+/* Metrics Styling */
+div[data-testid="stMetricValue"] {
+    font-size: 1.5rem !important;
+    color: #FFFFFF !important;
+}
+div[data-testid="stMetricLabel"] {
+    font-size: 0.9rem !important;
+    color: #AAAAAA !important;
+}

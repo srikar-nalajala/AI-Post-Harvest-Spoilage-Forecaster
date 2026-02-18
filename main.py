@@ -33,18 +33,26 @@ st.title(t("title"))
 st.subheader(t("subheader"))
 
 # --- MAIN LAYOUT ---
-col_main, col_right = st.columns([2, 1])
+# --- CUSTOM CSS ---
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# --- COLUMN 1: CROP ANALYSIS (LEFT) ---
-with col_main:
-    st.header(f"📸 {t('upload_header')}")
+local_css("assets/style.css")
+
+# --- MAIN LAYOUT (MOBILE OPTIMIZED) ---
+# Use Tabs for better mobile navigation instead of wide columns
+tab1, tab2, tab3 = st.tabs([f"📸 {t('upload_header')}", f"🌤️ {t('weather_header')}", f"💰 {t('market_prices')}"])
+
+# --- TAB 1: CROP ANALYSIS ---
+with tab1:
     st.caption("AI Post-Harvest Spoilage Forecaster")
     
     uploaded_file = st.file_uploader("", type=["jpg", "png", "jpeg"])
     
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
-        st.image(image, use_column_width=True)
+        st.image(image, use_container_width=True)
         
         with st.spinner(t("analyzing")):
             analysis_result = vision.analyze_image(image)
@@ -59,11 +67,9 @@ with col_main:
             st.divider()
             st.subheader(f"{t('crop_health')}")
             
-            # Color logic for native progress bar (Streamlit doesn't support changing bar color directly easily, 
-            # but we can use st.error/warning/success containers for emphasis)
+            # Color logic
             if score < 4:
                 st.success(f"🟢 Good / బాగుంది (Score: {score}/10)")
-                bar_color = "green" # Concept only, st.progress is standard
             elif score < 8:
                 st.warning(f"🟡 Medium / ఫర్వాలేదు (Score: {score}/10)")
             else:
@@ -101,11 +107,9 @@ with col_main:
     else:
         st.info("👋 Upload an image to start analysis.")
 
-# --- COLUMN 2: LIVE INFO & MARKET (RIGHT) ---
-with col_right:
-    # Weather Card (Native)
+# --- TAB 2: WEATHER ---
+with tab2:
     with st.container(border=True):
-        st.subheader(f"🌤️ {t('weather_header')}")
         st.caption(f"📍 {region}")
         
         weather_data = weather.get_weather(region)
@@ -124,21 +128,21 @@ with col_right:
         if not weather_data['hourly_data'].empty:
             st.line_chart(weather_data['hourly_data'].set_index("Time")['Humidity'], height=200)
 
-    # Market Prices Card (Native)
+# --- TAB 3: MARKET ---
+with tab3:
     with st.container(border=True):
-        st.subheader(f"💰 {t('market_prices')}")
-        
         market_df = market.get_market_data(region)
         st.dataframe(
             market_df, 
             hide_index=True, 
+            use_container_width=True,
             column_config={
                 "Market": st.column_config.TextColumn("Mandi"),
-                "Tomato_Price": st.column_config.NumberColumn("🍅 Tomato (₹/kg)", format="₹%d"),
-                "Onion_Price": st.column_config.NumberColumn("🧅 Onion (₹/kg)", format="₹%d"),
-                "Potato_Price": st.column_config.NumberColumn("🥔 Potato (₹/kg)", format="₹%d"),
-                "Chilli_Price": st.column_config.NumberColumn("🌶️ Chilli (₹/kg)", format="₹%d"),
-                "Brinjal_Price": st.column_config.NumberColumn("🍆 Brinjal (₹/kg)", format="₹%d"),
+                "Tomato_Price": st.column_config.NumberColumn("🍅 Tomato", format="₹%d"),
+                "Onion_Price": st.column_config.NumberColumn("🧅 Onion", format="₹%d"),
+                "Potato_Price": st.column_config.NumberColumn("🥔 Potato", format="₹%d"),
+                "Chilli_Price": st.column_config.NumberColumn("🌶️ Chilli", format="₹%d"),
+                "Brinjal_Price": st.column_config.NumberColumn("🍆 Brinjal", format="₹%d"),
             }
         )
 

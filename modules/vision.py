@@ -12,10 +12,9 @@ def analyze_image(image):
     Returns a dictionary with risk score (1-10), description, and markers.
     """
     api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        return {"error": "API Key not found. Please set GEMINI_API_KEY in .env"}
-
-    genai.configure(api_key=api_key)
+    
+    if api_key:
+        genai.configure(api_key=api_key)
     
     # List of models to try in order
     # Trying with 'models/' prefix and standard aliases
