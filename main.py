@@ -4,7 +4,7 @@ from PIL import Image
 from modules import vision, weather, market, translations
 
 # Page Config
-st.set_page_config(page_title="AgriThon", layout="wide", page_icon="🍅")
+st.set_page_config(page_title="Smart Farm Seller", layout="wide", page_icon="🍅")
 
 # Session State for Language
 if "lang" not in st.session_state:
@@ -37,6 +37,14 @@ st.subheader(t("subheader"))
 def local_css(file_name):
     with open(file_name) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    
+    # Extra manual override for top padding and sidebar
+    st.markdown("""
+        <style>
+        .block-container { padding-top: 1rem !important; }
+        .st-emotion-cache-1jm69s6 { padding-top: 2rem !important; }
+        </style>
+    """, unsafe_allow_html=True)
 
 local_css("assets/style.css")
 
@@ -48,14 +56,26 @@ tab1, tab2, tab3 = st.tabs([f"📸 {t('upload_header')}", f"🌤️ {t('weather_
 with tab1:
     st.caption("AI Post-Harvest Spoilage Forecaster")
     
-    uploaded_file = st.file_uploader("", type=["jpg", "png", "jpeg"])
+    # Input Method Selection
+    input_method = st.radio(
+        t("input_method"),
+        [t("upload_method"), t("camera_method")],
+        horizontal=True,
+        label_visibility="collapsed"
+    )
+    
+    uploaded_file = None
+    if input_method == t("upload_method"):
+        uploaded_file = st.file_uploader("", type=["jpg", "png", "jpeg"])
+    else:
+        uploaded_file = st.camera_input(t("camera_prompt"))
     
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
         st.image(image, use_container_width=True)
         
         with st.spinner(t("analyzing")):
-            analysis_result = vision.analyze_image(image)
+            analysis_result = vision.analyze_image(image, lang=st.session_state["lang"])
         
         if "error" in analysis_result:
             st.error(f"Error: {analysis_result['error']}")
@@ -79,9 +99,10 @@ with tab1:
             st.caption(analysis_result.get('analysis', ''))
             
             if "model_used" in analysis_result:
-                st.caption(f"Model used: {analysis_result['model_used']}")
+                st.caption(f"🛡️ {t('model_used')}: `{analysis_result['model_used']}`")
             
             # Recommendation
+            st.markdown("<br>", unsafe_allow_html=True)
             st.divider()
             st.subheader(f"💡 {t('market_header')}")
             
@@ -97,15 +118,17 @@ with tab1:
             
             # Native Container for Recommendation
             rec_container = st.container(border=True)
+            display_reason = t(rec['reason_key'])
+            
             if rec["urgency"] == "CRITICAL":
-                rec_container.error(f"## {display_action}\n{rec['reason']}")
+                rec_container.error(f"## {display_action}\n{display_reason}")
             elif rec["urgency"] == "HIGH":
-                rec_container.warning(f"## {display_action}\n{rec['reason']}")
+                rec_container.warning(f"## {display_action}\n{display_reason}")
             else:
-                rec_container.success(f"## {display_action}\n{rec['reason']}")
+                rec_container.success(f"## {display_action}\n{display_reason}")
 
     else:
-        st.info("👋 Upload an image to start analysis.")
+        st.info(t("upload_prompt"))
 
 # --- TAB 2: WEATHER ---
 with tab2:
@@ -122,7 +145,7 @@ with tab2:
         st.caption(f"Status: {weather_data['condition']}")
         
         if weather_data.get("is_live"):
-            st.toast("🟢 Live Weather Updated")
+            st.toast(t("live_weather_updated"))
         
         # Chart
         if not weather_data['hourly_data'].empty:
@@ -132,6 +155,30 @@ with tab2:
 with tab3:
     with st.container(border=True):
         market_df = market.get_market_data(region)
+        
+        # Interactive Price Chart
+        st.subheader(t("price_chart_title"))
+        
+        # Crop mapping for selector
+        crops = {
+            t("tomato"): "Tomato_Price",
+            t("onion"): "Onion_Price",
+            t("potato"): "Potato_Price",
+            t("chilli"): "Chilli_Price",
+            t("brinjal"): "Brinjal_Price"
+        }
+        
+        c1, c2 = st.columns([2, 1])
+        selected_crop_label = c1.selectbox(t("select_crop"), list(crops.keys()), label_visibility="collapsed")
+        selected_crop_col = crops[selected_crop_label]
+        
+        # Prepare chart data: Market vs Selected Crop Price
+        chart_data = market_df[["Market", selected_crop_col]].set_index("Market")
+        st.bar_chart(chart_data, color="#4CAF50")
+        
+        st.divider()
+        st.caption(t("market_prices"))
+        
         st.dataframe(
             market_df, 
             hide_index=True, 
@@ -148,4 +195,4 @@ with tab3:
 
 # Footer
 st.divider()
-st.caption("AgriThon 2026 Prototype | Powered by Google Gemini & Streamlit")
+st.caption("Smart Farm Seller 2026 Prototype | Powered by Google Gemini & Streamlit")

@@ -1,10 +1,10 @@
-**🍅AI Post-Harvest Spoilage Forecaster**
+**🍅 Smart Farm Seller**
 
-AgriThon 2026 Prototype | Reducing crop Waste through Intelligent Market Matching
+Smart Farm Seller 2026 Prototype | Reducing crop Waste through Intelligent Market Matching
 
 **📖 Overview**
 
-harvest loss is a critical challenge for small-scale farmers. AgriThon is an AI-powered dashboard that helps farmers decide whether to Sell, Store, or Monitor their produce. By combining Computer Vision (Google Gemini) with Live Weather Data, the app predicts spoilage risks and matches crops to the best-priced local Mandis.
+harvest loss is a critical challenge for small-scale farmers. Smart Farm Seller is an AI-powered dashboard that helps farmers decide whether to Sell, Store, or Monitor their produce. By combining Computer Vision (Google Gemini) with Live Weather Data, the app predicts spoilage risks and matches crops to the best-priced local Mandis.
 
 **✨ Key Features**
 
@@ -39,8 +39,8 @@ A Google Gemini API Key
 Clone the repository:
 
 Bash
-git clone https://github.com/your-username/agrithon.git
-cd agrithon
+git clone https://github.com/your-username/smart-farm-seller.git
+cd smart-farm-seller
 Install dependencies:
 
 Bash

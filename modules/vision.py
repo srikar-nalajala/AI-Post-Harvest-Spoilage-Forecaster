@@ -6,11 +6,21 @@ import json
 
 load_dotenv()
 
-def analyze_image(image):
+def analyze_image(image, lang="en"):
     """
     Analyzes an image using Google's Gemini API to detect spoilage.
     Returns a dictionary with risk score (1-10), description, and markers.
     """
+    # Mapping lang code to name for the AI prompt
+    lang_map = {
+        "en": "English",
+        "te": "Telugu",
+        "kn": "Kannada",
+        "mr": "Marathi",
+        "ta": "Tamil"
+    }
+    target_lang = lang_map.get(lang, "English")
+    
     api_key = os.getenv("GEMINI_API_KEY")
     
     if api_key:
@@ -28,20 +38,22 @@ def analyze_image(image):
         'gemini-1.5-flash', # Try without prefix too
     ]
 
-    prompt = """
+    prompt = f"""
     You are an agricultural expert. Analyze this image of produce (fruit/vegetable).
     1. Identify the produce.
     2. Estimate a Spoilage Risk Score from 1 to 10 (1 = Fresh/New, 10 = Rotten/Bad).
     3. List specific visual markers of decay or freshness.
     4. Provide a short analysis.
 
+    IMPORTANT: Provide the 'analysis' and 'produce_name' fields strictly in the {target_lang} language.
+
     Return the response strictly as valid JSON with the following structure:
-    {
+    {{
         "produce_name": "string",
         "spoilage_score": integer (1-10),
         "visual_markers": ["marker1", "marker2"],
         "analysis": "string description"
-    }
+    }}
     Do not include markdown formatting (```json ... ```) in the response, just the raw JSON string.
     """
 

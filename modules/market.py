@@ -75,34 +75,34 @@ def get_recommendation(spoilage_score, weather_data):
     
     urgency = "LOW"
     action = "HOLD"
-    reason = "Produce occurs fresh. Monitor market prices."
+    reason_key = "reason_fresh"
 
     if spoilage_score >= 8:
         urgency = "CRITICAL"
         action = "SELL IMMEDIATELY"
-        reason = "Produce shows significant signs of decay. Immediate sale recommended to avoid total loss."
+        reason_key = "reason_critical"
     elif spoilage_score >= 5:
         if humidity > 70 or temp > 35:
             urgency = "HIGH"
             action = "SELL SOON"
-            reason = f"Moderate spoilage risk combined with adverse weather (Hum: {humidity}%, Temp: {temp}°C) accelerates decay."
+            reason_key = "reason_moderate_weather"
         else:
             urgency = "MEDIUM"
             action = "PLAN SALE"
-            reason = "Produce is degrading but weather conditions are stable. Plan sale within 2-3 days."
+            reason_key = "reason_moderate_stable"
     else:
         # Low spoilage
         if humidity > 85:
             urgency = "MEDIUM"
             action = "MONITOR CLOSELY"
-            reason = "Produce is fresh, but high humidity is a risk factor."
+            reason_key = "reason_fresh_humidity"
         else:
             urgency = "LOW"
             action = "HOLD / STORE"
-            reason = "Produce is in good condition. You can hold for better market prices."
+            reason_key = "reason_good_condition"
 
     return {
         "urgency": urgency,
         "action": action,
-        "reason": reason
+        "reason_key": reason_key
     }
